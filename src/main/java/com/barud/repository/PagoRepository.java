@@ -1,6 +1,7 @@
 package com.barud.repository;
 
 import com.barud.model.Pago;
+import com.barud.model.enums.PagoMetodo;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +16,7 @@ public class PagoRepository {
 	private final RowMapper<Pago> rowMapper = (rs, rowNum) -> new Pago(
 		rs.getInt("id_pago"),
 		rs.getInt("id_cuenta"),
-		rs.getString("metodo"),
+		PagoMetodo.fromValue(rs.getString("metodo")),
 		rs.getBigDecimal("monto"),
 		rs.getTimestamp("fecha") == null ? null : rs.getTimestamp("fecha").toLocalDateTime()
 	);
@@ -48,7 +49,7 @@ public class PagoRepository {
 				"INSERT INTO pago (id_cuenta, metodo, monto, fecha) VALUES (?, ?, ?, ?) RETURNING id_pago",
 				Integer.class,
 				pago.getIdCuenta(),
-				pago.getMetodo(),
+				pago.getMetodo().getDbValue(),
 				pago.getMonto(),
 				pago.getFecha()
 			);
@@ -59,7 +60,7 @@ public class PagoRepository {
 		jdbcTemplate.update(
 			"UPDATE pago SET id_cuenta = ?, metodo = ?, monto = ?, fecha = ? WHERE id_pago = ?",
 			pago.getIdCuenta(),
-			pago.getMetodo(),
+			pago.getMetodo().getDbValue(),
 			pago.getMonto(),
 			pago.getFecha(),
 			pago.getIdPago()

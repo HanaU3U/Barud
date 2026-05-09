@@ -3,6 +3,7 @@ package com.barud.controller;
 import com.barud.dto.ResponseDtoMapper;
 import com.barud.dto.response.PedidoResponseDto;
 import com.barud.model.Pedido;
+import com.barud.model.enums.PedidoEstado;
 import com.barud.service.PedidoService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +33,7 @@ public class PedidoCrudController {
     public List<PedidoResponseDto> listar(
         @RequestParam(required = false) Integer idMesa,
         @RequestParam(required = false) Integer idMesero,
-        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) PedidoEstado estado,
         @RequestParam(required = false) LocalDateTime fechaDesde,
         @RequestParam(required = false) LocalDateTime fechaHasta,
         @RequestParam(defaultValue = "0") int page,

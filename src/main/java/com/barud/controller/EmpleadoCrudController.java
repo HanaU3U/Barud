@@ -3,6 +3,8 @@ package com.barud.controller;
 import com.barud.dto.ResponseDtoMapper;
 import com.barud.dto.response.EmpleadoResponseDto;
 import com.barud.model.Empleado;
+import com.barud.model.enums.EmpleadoEstado;
+import com.barud.model.enums.EmpleadoRol;
 import com.barud.repository.EmpleadoRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,8 +33,8 @@ public class EmpleadoCrudController {
     @GetMapping
     public List<EmpleadoResponseDto> listar(
         @RequestParam(required = false) String nombre,
-        @RequestParam(required = false) String rol,
-        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) EmpleadoRol rol,
+        @RequestParam(required = false) EmpleadoEstado estado,
         @RequestParam(required = false) LocalDate fechaDesde,
         @RequestParam(required = false) LocalDate fechaHasta
     ) {

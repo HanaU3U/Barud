@@ -1,6 +1,7 @@
 package com.barud.repository;
 
 import com.barud.model.Mesa;
+import com.barud.model.enums.MesaEstado;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +17,7 @@ public class MesaRepository {
 		rs.getInt("id_mesa"),
 		rs.getInt("numero"),
 		rs.getInt("capacidad"),
-		rs.getString("estado")
+		MesaEstado.fromValue(rs.getString("estado"))
 	);
 
 	public MesaRepository(JdbcTemplate jdbcTemplate) {
@@ -48,7 +49,7 @@ public class MesaRepository {
 				Integer.class,
 				mesa.getNumero(),
 				mesa.getCapacidad(),
-				mesa.getEstado()
+				mesa.getEstado().getDbValue()
 			);
 			mesa.setIdMesa(id);
 			return mesa;
@@ -58,14 +59,14 @@ public class MesaRepository {
 			"UPDATE mesa SET numero = ?, capacidad = ?, estado = ? WHERE id_mesa = ?",
 			mesa.getNumero(),
 			mesa.getCapacidad(),
-			mesa.getEstado(),
+			mesa.getEstado().getDbValue(),
 			mesa.getIdMesa()
 		);
 		return mesa;
 	}
 
-	public int updateEstadoById(Integer idMesa, String estado) {
-		return jdbcTemplate.update("UPDATE mesa SET estado = ? WHERE id_mesa = ?", estado, idMesa);
+	public int updateEstadoById(Integer idMesa, MesaEstado estado) {
+		return jdbcTemplate.update("UPDATE mesa SET estado = ? WHERE id_mesa = ?", estado.getDbValue(), idMesa);
 	}
 
 	public void deleteById(Integer id) {

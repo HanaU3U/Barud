@@ -1,5 +1,6 @@
 package com.barud.dto.response;
 
+import com.barud.model.enums.DetallePedidoEstado;
 import java.math.BigDecimal;
 
 public record DetallePedidoResponseDto(
@@ -8,6 +9,6 @@ public record DetallePedidoResponseDto(
     Integer idProducto,
     Integer cantidad,
     BigDecimal precioUnitario,
-    String estado
+    DetallePedidoEstado estado
 ) {
 }

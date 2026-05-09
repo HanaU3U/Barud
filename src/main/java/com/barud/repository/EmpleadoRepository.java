@@ -1,6 +1,8 @@
 package com.barud.repository;
 
 import com.barud.model.Empleado;
+import com.barud.model.enums.EmpleadoEstado;
+import com.barud.model.enums.EmpleadoRol;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +19,9 @@ public class EmpleadoRepository {
 	private final RowMapper<Empleado> rowMapper = (rs, rowNum) -> new Empleado(
 		rs.getInt("id_empleado"),
 		rs.getString("nombre"),
-		rs.getString("rol"),
+		EmpleadoRol.fromValue(rs.getString("rol")),
 		rs.getDate("fecha_ingreso").toLocalDate(),
-		rs.getString("estado")
+		EmpleadoEstado.fromValue(rs.getString("estado"))
 	);
 
 	public EmpleadoRepository(JdbcTemplate jdbcTemplate) {
@@ -33,7 +35,13 @@ public class EmpleadoRepository {
 		);
 	}
 
-	public List<Empleado> findByFilters(String nombre, String rol, String estado, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Empleado> findByFilters(
+		String nombre,
+		EmpleadoRol rol,
+		EmpleadoEstado estado,
+		LocalDate fechaDesde,
+		LocalDate fechaHasta
+	) {
 		StringBuilder sql = new StringBuilder(
 			"SELECT id_empleado, nombre, rol, fecha_ingreso, estado FROM empleado WHERE 1=1"
 		);
@@ -43,13 +51,13 @@ public class EmpleadoRepository {
 			sql.append(" AND LOWER(nombre) LIKE LOWER(?)");
 			params.add("%" + nombre + "%");
 		}
-		if (rol != null && !rol.isBlank()) {
+		if (rol != null) {
 			sql.append(" AND rol = ?");
-			params.add(rol);
+			params.add(rol.getDbValue());
 		}
-		if (estado != null && !estado.isBlank()) {
+		if (estado != null) {
 			sql.append(" AND estado = ?");
-			params.add(estado);
+			params.add(estado.getDbValue());
 		}
 		if (fechaDesde != null) {
 			sql.append(" AND fecha_ingreso >= ?");
@@ -88,9 +96,9 @@ public class EmpleadoRepository {
 				"INSERT INTO empleado (nombre, rol, fecha_ingreso, estado) VALUES (?, ?, ?, ?) RETURNING id_empleado",
 				Integer.class,
 				empleado.getNombre(),
-				empleado.getRol(),
+				empleado.getRol().getDbValue(),
 				empleado.getFechaIngreso(),
-				empleado.getEstado()
+				empleado.getEstado().getDbValue()
 			);
 			empleado.setIdEmpleado(id);
 			return empleado;
@@ -99,9 +107,9 @@ public class EmpleadoRepository {
 		jdbcTemplate.update(
 			"UPDATE empleado SET nombre = ?, rol = ?, fecha_ingreso = ?, estado = ? WHERE id_empleado = ?",
 			empleado.getNombre(),
-			empleado.getRol(),
+			empleado.getRol().getDbValue(),
 			empleado.getFechaIngreso(),
-			empleado.getEstado(),
+			empleado.getEstado().getDbValue(),
 			empleado.getIdEmpleado()
 		);
 		return empleado;

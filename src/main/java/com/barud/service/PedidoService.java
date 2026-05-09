@@ -1,6 +1,8 @@
 package com.barud.service;
 
 import com.barud.model.Pedido;
+import com.barud.model.enums.MesaEstado;
+import com.barud.model.enums.PedidoEstado;
 import com.barud.repository.MesaRepository;
 import com.barud.repository.PedidoRepository;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public class PedidoService {
     public List<Pedido> listarConFiltros(
         Integer idMesa,
         Integer idMesero,
-        String estado,
+        PedidoEstado estado,
         LocalDateTime fechaDesde,
         LocalDateTime fechaHasta,
         int page,
@@ -67,8 +69,8 @@ public class PedidoService {
         }
 
         Pedido pedido = pedidoOpt.get();
-        pedidoRepository.updateEstadoById(idPedido, "Cerrado");
-        mesaRepository.updateEstadoById(pedido.getIdMesa(), "Disponible");
+        pedidoRepository.updateEstadoById(idPedido, PedidoEstado.CERRADO);
+        mesaRepository.updateEstadoById(pedido.getIdMesa(), MesaEstado.DISPONIBLE);
 
         return pedidoRepository.findById(idPedido);
     }

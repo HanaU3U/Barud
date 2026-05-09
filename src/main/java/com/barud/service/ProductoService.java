@@ -1,6 +1,7 @@
 package com.barud.service;
 
 import com.barud.model.Producto;
+import com.barud.model.enums.ProductoTipo;
 import com.barud.repository.ProductoRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +19,7 @@ public class ProductoService {
 
     public List<Producto> listarConFiltros(
         String nombre,
-        String tipo,
+        ProductoTipo tipo,
         BigDecimal minPrecio,
         BigDecimal maxPrecio,
         Integer minStock,

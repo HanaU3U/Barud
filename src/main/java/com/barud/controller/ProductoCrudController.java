@@ -3,6 +3,7 @@ package com.barud.controller;
 import com.barud.dto.ResponseDtoMapper;
 import com.barud.dto.response.ProductoResponseDto;
 import com.barud.model.Producto;
+import com.barud.model.enums.ProductoTipo;
 import com.barud.service.ProductoService;
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ProductoCrudController {
     @GetMapping
     public List<ProductoResponseDto> listar(
         @RequestParam(required = false) String nombre,
-        @RequestParam(required = false) String tipo,
+        @RequestParam(required = false) ProductoTipo tipo,
         @RequestParam(required = false) BigDecimal minPrecio,
         @RequestParam(required = false) BigDecimal maxPrecio,
         @RequestParam(required = false) Integer minStock,

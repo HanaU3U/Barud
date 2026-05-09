@@ -1,5 +1,6 @@
 package com.barud.model;
 
+import com.barud.model.enums.MesaEstado;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,5 +27,5 @@ public class Mesa {
 	private Integer capacidad;
 
 	@Column("estado")
-	private String estado;
+	private MesaEstado estado;
 }

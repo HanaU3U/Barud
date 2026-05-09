@@ -1,6 +1,7 @@
 package com.barud.repository;
 
 import com.barud.model.Pedido;
+import com.barud.model.enums.PedidoEstado;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class PedidoRepository {
 		rs.getInt("id_mesero"),
 		rs.getTimestamp("fecha_hora") == null ? null : rs.getTimestamp("fecha_hora").toLocalDateTime(),
 		rs.getInt("numero_personas"),
-		rs.getString("estado")
+		PedidoEstado.fromValue(rs.getString("estado"))
 	);
 
 	public PedidoRepository(JdbcTemplate jdbcTemplate) {
@@ -37,7 +38,7 @@ public class PedidoRepository {
 	public List<Pedido> findByFilters(
 		Integer idMesa,
 		Integer idMesero,
-		String estado,
+		PedidoEstado estado,
 		LocalDateTime fechaDesde,
 		LocalDateTime fechaHasta,
 		int page,
@@ -56,9 +57,9 @@ public class PedidoRepository {
 			sql.append(" AND id_mesero = ?");
 			params.add(idMesero);
 		}
-		if (estado != null && !estado.isBlank()) {
+		if (estado != null) {
 			sql.append(" AND estado = ?");
-			params.add(estado);
+			params.add(estado.getDbValue());
 		}
 		if (fechaDesde != null) {
 			sql.append(" AND fecha_hora >= ?");
@@ -99,7 +100,7 @@ public class PedidoRepository {
 				pedido.getIdMesero(),
 				pedido.getFechaHora(),
 				pedido.getNumeroPersonas(),
-				pedido.getEstado()
+				pedido.getEstado().getDbValue()
 			);
 			pedido.setIdPedido(id);
 			return pedido;
@@ -111,14 +112,14 @@ public class PedidoRepository {
 			pedido.getIdMesero(),
 			pedido.getFechaHora(),
 			pedido.getNumeroPersonas(),
-			pedido.getEstado(),
+			pedido.getEstado().getDbValue(),
 			pedido.getIdPedido()
 		);
 		return pedido;
 	}
 
-	public int updateEstadoById(Integer idPedido, String estado) {
-		return jdbcTemplate.update("UPDATE pedido SET estado = ? WHERE id_pedido = ?", estado, idPedido);
+	public int updateEstadoById(Integer idPedido, PedidoEstado estado) {
+		return jdbcTemplate.update("UPDATE pedido SET estado = ? WHERE id_pedido = ?", estado.getDbValue(), idPedido);
 	}
 
 	public void deleteById(Integer id) {

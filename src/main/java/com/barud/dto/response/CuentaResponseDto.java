@@ -1,5 +1,6 @@
 package com.barud.dto.response;
 
+import com.barud.model.enums.CuentaEstado;
 import java.math.BigDecimal;
 
 public record CuentaResponseDto(
@@ -8,6 +9,6 @@ public record CuentaResponseDto(
     BigDecimal subtotal,
     BigDecimal impuestos,
     BigDecimal total,
-    String estado
+    CuentaEstado estado
 ) {
 }

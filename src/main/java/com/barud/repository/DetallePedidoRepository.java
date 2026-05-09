@@ -1,6 +1,7 @@
 package com.barud.repository;
 
 import com.barud.model.DetallePedido;
+import com.barud.model.enums.DetallePedidoEstado;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,7 +19,7 @@ public class DetallePedidoRepository {
 		rs.getInt("id_producto"),
 		rs.getInt("cantidad"),
 		rs.getBigDecimal("precio_unitario"),
-		rs.getString("estado")
+		DetallePedidoEstado.fromValue(rs.getString("estado"))
 	);
 
 	public DetallePedidoRepository(JdbcTemplate jdbcTemplate) {
@@ -59,7 +60,7 @@ public class DetallePedidoRepository {
 				detallePedido.getIdProducto(),
 				detallePedido.getCantidad(),
 				detallePedido.getPrecioUnitario(),
-				detallePedido.getEstado()
+				detallePedido.getEstado().getDbValue()
 			);
 			detallePedido.setIdDetalle(id);
 			return detallePedido;
@@ -71,7 +72,7 @@ public class DetallePedidoRepository {
 			detallePedido.getIdProducto(),
 			detallePedido.getCantidad(),
 			detallePedido.getPrecioUnitario(),
-			detallePedido.getEstado(),
+			detallePedido.getEstado().getDbValue(),
 			detallePedido.getIdDetalle()
 		);
 		return detallePedido;

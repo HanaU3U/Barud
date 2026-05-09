@@ -1,5 +1,6 @@
 package com.barud.model;
 
+import com.barud.model.enums.PagoMetodo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class Pago {
     private Integer idCuenta;
 
     @Column("metodo")
-    private String metodo;
+    private PagoMetodo metodo;
 
     @Column("monto")
     private BigDecimal monto;

@@ -1,6 +1,7 @@
 package com.barud.repository;
 
 import com.barud.model.Producto;
+import com.barud.model.enums.ProductoTipo;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class ProductoRepository {
 	private final RowMapper<Producto> rowMapper = (rs, rowNum) -> new Producto(
 		rs.getInt("id_producto"),
 		rs.getString("nombre"),
-		rs.getString("tipo"),
+		ProductoTipo.fromValue(rs.getString("tipo")),
 		rs.getBigDecimal("precio"),
 		rs.getInt("stock")
 	);
@@ -35,7 +36,7 @@ public class ProductoRepository {
 
 	public List<Producto> findByFilters(
 		String nombre,
-		String tipo,
+		ProductoTipo tipo,
 		BigDecimal minPrecio,
 		BigDecimal maxPrecio,
 		Integer minStock,
@@ -52,9 +53,9 @@ public class ProductoRepository {
 			sql.append(" AND LOWER(nombre) LIKE LOWER(?)");
 			params.add("%" + nombre + "%");
 		}
-		if (tipo != null && !tipo.isBlank()) {
+		if (tipo != null) {
 			sql.append(" AND tipo = ?");
-			params.add(tipo);
+			params.add(tipo.getDbValue());
 		}
 		if (minPrecio != null) {
 			sql.append(" AND precio >= ?");
@@ -107,7 +108,7 @@ public class ProductoRepository {
 				"INSERT INTO producto (nombre, tipo, precio, stock) VALUES (?, ?, ?, ?) RETURNING id_producto",
 				Integer.class,
 				producto.getNombre(),
-				producto.getTipo(),
+				producto.getTipo().getDbValue(),
 				producto.getPrecio(),
 				producto.getStock()
 			);
@@ -118,7 +119,7 @@ public class ProductoRepository {
 		jdbcTemplate.update(
 			"UPDATE producto SET nombre = ?, tipo = ?, precio = ?, stock = ? WHERE id_producto = ?",
 			producto.getNombre(),
-			producto.getTipo(),
+			producto.getTipo().getDbValue(),
 			producto.getPrecio(),
 			producto.getStock(),
 			producto.getIdProducto()

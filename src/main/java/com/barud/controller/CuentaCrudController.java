@@ -3,9 +3,11 @@ package com.barud.controller;
 import com.barud.dto.ResponseDtoMapper;
 import com.barud.dto.response.CuentaResponseDto;
 import com.barud.model.Cuenta;
+import com.barud.model.enums.CuentaEstado;
 import com.barud.service.CuentaService;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +33,7 @@ public class CuentaCrudController {
     @GetMapping
     public List<CuentaResponseDto> listar(
         @RequestParam(required = false) Integer idPedido,
-        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) CuentaEstado estado,
         @RequestParam(required = false) BigDecimal minTotal,
         @RequestParam(required = false) BigDecimal maxTotal,
         @RequestParam(defaultValue = "0") int page,
@@ -51,16 +53,24 @@ public class CuentaCrudController {
     }
 
     @PostMapping
-    public CuentaResponseDto crear(@RequestBody Cuenta cuenta) {
-        return ResponseDtoMapper.toDto(cuentaService.crear(cuenta));
+    public ResponseEntity<?> crear(@RequestBody Cuenta cuenta) {
+        try {
+            return ResponseEntity.ok(ResponseDtoMapper.toDto(cuentaService.crear(cuenta)));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(409).body(Map.of("message", ex.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CuentaResponseDto> actualizar(@PathVariable Integer id, @RequestBody Cuenta cuenta) {
-        return cuentaService.actualizar(id, cuenta)
-            .map(ResponseDtoMapper::toDto)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody Cuenta cuenta) {
+        try {
+            return cuentaService.actualizar(id, cuenta)
+                .map(ResponseDtoMapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(409).body(Map.of("message", ex.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/cerrar")

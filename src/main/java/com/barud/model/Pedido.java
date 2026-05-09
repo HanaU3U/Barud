@@ -1,5 +1,6 @@
 package com.barud.model;
 
+import com.barud.model.enums.PedidoEstado;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,5 @@ public class Pedido {
     private Integer numeroPersonas;
 
     @Column("estado")
-    private String estado;
+    private PedidoEstado estado;
 }

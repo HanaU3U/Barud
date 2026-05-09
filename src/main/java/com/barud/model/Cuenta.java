@@ -1,5 +1,6 @@
 package com.barud.model;
 
+import com.barud.model.enums.CuentaEstado;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,5 @@ public class Cuenta {
     private BigDecimal total;
 
     @Column("estado")
-    private String estado;
+    private CuentaEstado estado;
 }

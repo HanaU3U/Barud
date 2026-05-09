@@ -1,5 +1,6 @@
 package com.barud.model;
 
+import com.barud.model.enums.ProductoTipo;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class Producto {
     private String nombre;
 
     @Column("tipo")
-    private String tipo;
+    private ProductoTipo tipo;
 
     @Column("precio")
     private BigDecimal precio;

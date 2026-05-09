@@ -1,5 +1,6 @@
 package com.barud.dto.response;
 
+import com.barud.model.enums.PedidoEstado;
 import java.time.LocalDateTime;
 
 public record PedidoResponseDto(
@@ -8,6 +9,6 @@ public record PedidoResponseDto(
     Integer idMesero,
     LocalDateTime fechaHora,
     Integer numeroPersonas,
-    String estado
+    PedidoEstado estado
 ) {
 }

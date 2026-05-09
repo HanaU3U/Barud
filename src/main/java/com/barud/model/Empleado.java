@@ -1,5 +1,7 @@
 package com.barud.model;
 
+import com.barud.model.enums.EmpleadoEstado;
+import com.barud.model.enums.EmpleadoRol;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +26,11 @@ public class Empleado {
     private String nombre;
 
     @Column("rol")
-    private String rol;
+    private EmpleadoRol rol;
 
     @Column("fecha_ingreso")
     private LocalDate fechaIngreso;
 
     @Column("estado")
-    private String estado;
+    private EmpleadoEstado estado;
 }
