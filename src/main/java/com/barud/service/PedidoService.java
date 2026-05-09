@@ -1,0 +1,75 @@
+package com.barud.service;
+
+import com.barud.model.Pedido;
+import com.barud.repository.MesaRepository;
+import com.barud.repository.PedidoRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class PedidoService {
+
+    private final PedidoRepository pedidoRepository;
+    private final MesaRepository mesaRepository;
+
+    public PedidoService(PedidoRepository pedidoRepository, MesaRepository mesaRepository) {
+        this.pedidoRepository = pedidoRepository;
+        this.mesaRepository = mesaRepository;
+    }
+
+    public List<Pedido> listarConFiltros(
+        Integer idMesa,
+        Integer idMesero,
+        String estado,
+        LocalDateTime fechaDesde,
+        LocalDateTime fechaHasta,
+        int page,
+        int size
+    ) {
+        int safePage = Math.max(page, 0);
+        int safeSize = size <= 0 ? 10 : Math.min(size, 100);
+        return pedidoRepository.findByFilters(idMesa, idMesero, estado, fechaDesde, fechaHasta, safePage, safeSize);
+    }
+
+    public Optional<Pedido> obtenerPorId(Integer id) {
+        return pedidoRepository.findById(id);
+    }
+
+    public Pedido crear(Pedido pedido) {
+        pedido.setIdPedido(null);
+        return pedidoRepository.save(pedido);
+    }
+
+    public Optional<Pedido> actualizar(Integer id, Pedido pedido) {
+        if (!pedidoRepository.existsById(id)) {
+            return Optional.empty();
+        }
+        pedido.setIdPedido(id);
+        return Optional.of(pedidoRepository.save(pedido));
+    }
+
+    public boolean eliminar(Integer id) {
+        if (!pedidoRepository.existsById(id)) {
+            return false;
+        }
+        pedidoRepository.deleteById(id);
+        return true;
+    }
+
+    @Transactional
+    public Optional<Pedido> cerrarPedidoYLiberarMesa(Integer idPedido) {
+        Optional<Pedido> pedidoOpt = pedidoRepository.findById(idPedido);
+        if (pedidoOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Pedido pedido = pedidoOpt.get();
+        pedidoRepository.updateEstadoById(idPedido, "Cerrado");
+        mesaRepository.updateEstadoById(pedido.getIdMesa(), "Disponible");
+
+        return pedidoRepository.findById(idPedido);
+    }
+}
