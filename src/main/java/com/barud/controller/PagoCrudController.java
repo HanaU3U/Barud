@@ -1,12 +1,10 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.PagoRequestDto;
 import com.barud.dto.response.PagoResponseDto;
-import com.barud.model.Pago;
-import com.barud.repository.PagoRepository;
+import com.barud.service.PagoService;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.StreamSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,48 +19,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/pagos")
 public class PagoCrudController {
 
-    private final PagoRepository pagoRepository;
+    private final PagoService pagoService;
 
-    public PagoCrudController(PagoRepository pagoRepository) {
-        this.pagoRepository = pagoRepository;
+    public PagoCrudController(PagoService pagoService) {
+        this.pagoService = pagoService;
     }
 
     @GetMapping
     public List<PagoResponseDto> listar() {
-        return StreamSupport.stream(pagoRepository.findAll().spliterator(), false)
+        return pagoService.listarTodos().stream()
             .map(ResponseDtoMapper::toDto)
             .toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PagoResponseDto> obtenerPorId(@PathVariable Integer id) {
-        Optional<Pago> pago = pagoRepository.findById(id);
-        return pago.map(ResponseDtoMapper::toDto)
+        return pagoService.obtenerPorId(id)
+            .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public PagoResponseDto crear(@RequestBody Pago pago) {
-        pago.setIdPago(null);
-        return ResponseDtoMapper.toDto(pagoRepository.save(pago));
+    public PagoResponseDto crear(@RequestBody PagoRequestDto dto) {
+        return ResponseDtoMapper.toDto(pagoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PagoResponseDto> actualizar(@PathVariable Integer id, @RequestBody Pago pago) {
-        if (!pagoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        pago.setIdPago(id);
-        return ResponseEntity.ok(ResponseDtoMapper.toDto(pagoRepository.save(pago)));
+    public ResponseEntity<PagoResponseDto> actualizar(@PathVariable Integer id, @RequestBody PagoRequestDto dto) {
+        return pagoService.actualizar(id, dto)
+            .map(ResponseDtoMapper::toDto)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        if (!pagoRepository.existsById(id)) {
+        if (!pagoService.eliminar(id)) {
             return ResponseEntity.notFound().build();
         }
-        pagoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

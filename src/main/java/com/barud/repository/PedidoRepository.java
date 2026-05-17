@@ -30,7 +30,7 @@ public class PedidoRepository {
 
 	public Iterable<Pedido> findAll() {
 		return jdbcTemplate.query(
-			"SELECT id_pedido, id_mesa, id_mesero, fecha_hora, numero_personas, estado FROM pedido ORDER BY id_pedido",
+			"SELECT id_pedido, id_mesa, id_mesero, fecha_hora, numero_personas, estado FROM pedido ORDER BY id_pedido DESC",
 			rowMapper
 		);
 	}

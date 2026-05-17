@@ -1,6 +1,7 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.CuentaRequestDto;
 import com.barud.dto.response.CuentaResponseDto;
 import com.barud.model.Cuenta;
 import com.barud.model.enums.CuentaEstado;
@@ -53,18 +54,18 @@ public class CuentaCrudController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Cuenta cuenta) {
+    public ResponseEntity<?> crear(@RequestBody CuentaRequestDto dto) {
         try {
-            return ResponseEntity.ok(ResponseDtoMapper.toDto(cuentaService.crear(cuenta)));
+            return ResponseEntity.ok(ResponseDtoMapper.toDto(cuentaService.crear(dto)));
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(409).body(Map.of("message", ex.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody Cuenta cuenta) {
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody CuentaRequestDto dto) {
         try {
-            return cuentaService.actualizar(id, cuenta)
+            return cuentaService.actualizar(id, dto)
                 .map(ResponseDtoMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

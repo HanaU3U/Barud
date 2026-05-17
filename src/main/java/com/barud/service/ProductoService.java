@@ -1,5 +1,6 @@
 package com.barud.service;
 
+import com.barud.dto.request.ProductoRequestDto;
 import com.barud.model.Producto;
 import com.barud.model.enums.ProductoTipo;
 import com.barud.repository.ProductoRepository;
@@ -36,16 +37,16 @@ public class ProductoService {
         return productoRepository.findById(id);
     }
 
-    public Producto crear(Producto producto) {
-        producto.setIdProducto(null);
+    public Producto crear(ProductoRequestDto dto) {
+        Producto producto = new Producto(null, dto.nombre(), dto.tipo(), dto.precio(), dto.stock());
         return productoRepository.save(producto);
     }
 
-    public Optional<Producto> actualizar(Integer id, Producto producto) {
+    public Optional<Producto> actualizar(Integer id, ProductoRequestDto dto) {
         if (!productoRepository.existsById(id)) {
             return Optional.empty();
         }
-        producto.setIdProducto(id);
+        Producto producto = new Producto(id, dto.nombre(), dto.tipo(), dto.precio(), dto.stock());
         return Optional.of(productoRepository.save(producto));
     }
 

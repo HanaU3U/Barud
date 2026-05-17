@@ -1,5 +1,7 @@
 package com.barud.controller;
 
+import com.barud.dto.response.BebidaAlcoholicaMasVendidaViewDto;
+import com.barud.dto.response.ComidaNoPedidaViewDto;
 import com.barud.dto.response.CuentaMesaViewDto;
 import com.barud.dto.response.DetalleCuentaMesaViewDto;
 import com.barud.dto.response.DetallePedidoCompletoViewDto;
@@ -79,5 +81,15 @@ public class VistaController {
     @GetMapping("/division-cuenta-mesa")
     public List<DivisionCuentaMesaViewDto> divisionCuentaMesa() {
         return vistaQueryService.divisionCuentaMesa();
+    }
+
+    @GetMapping("/bebidas-alcoholicas-mas-vendidas")
+    public List<BebidaAlcoholicaMasVendidaViewDto> bebidasAlcoholicasMasVendidas() {
+        return vistaQueryService.bebidasAlcoholicasMasVendidas();
+    }
+
+    @GetMapping("/comidas-no-pedidas")
+    public List<ComidaNoPedidaViewDto> comidasNoPedidas() {
+        return vistaQueryService.comidasNoPedidas();
     }
 }

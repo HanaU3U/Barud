@@ -1,12 +1,10 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.MesaRequestDto;
 import com.barud.dto.response.MesaResponseDto;
-import com.barud.model.Mesa;
-import com.barud.repository.MesaRepository;
+import com.barud.service.MesaService;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.StreamSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,48 +19,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/mesas")
 public class MesaCrudController {
 
-    private final MesaRepository mesaRepository;
+    private final MesaService mesaService;
 
-    public MesaCrudController(MesaRepository mesaRepository) {
-        this.mesaRepository = mesaRepository;
+    public MesaCrudController(MesaService mesaService) {
+        this.mesaService = mesaService;
     }
 
     @GetMapping
     public List<MesaResponseDto> listar() {
-        return StreamSupport.stream(mesaRepository.findAll().spliterator(), false)
+        return mesaService.listarTodas().stream()
             .map(ResponseDtoMapper::toDto)
             .toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MesaResponseDto> obtenerPorId(@PathVariable Integer id) {
-        Optional<Mesa> mesa = mesaRepository.findById(id);
-        return mesa.map(ResponseDtoMapper::toDto)
+        return mesaService.obtenerPorId(id)
+            .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public MesaResponseDto crear(@RequestBody Mesa mesa) {
-        mesa.setIdMesa(null);
-        return ResponseDtoMapper.toDto(mesaRepository.save(mesa));
+    public MesaResponseDto crear(@RequestBody MesaRequestDto dto) {
+        return ResponseDtoMapper.toDto(mesaService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MesaResponseDto> actualizar(@PathVariable Integer id, @RequestBody Mesa mesa) {
-        if (!mesaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        mesa.setIdMesa(id);
-        return ResponseEntity.ok(ResponseDtoMapper.toDto(mesaRepository.save(mesa)));
+    public ResponseEntity<MesaResponseDto> actualizar(@PathVariable Integer id, @RequestBody MesaRequestDto dto) {
+        return mesaService.actualizar(id, dto)
+            .map(ResponseDtoMapper::toDto)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        if (!mesaRepository.existsById(id)) {
+        if (!mesaService.eliminar(id)) {
             return ResponseEntity.notFound().build();
         }
-        mesaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

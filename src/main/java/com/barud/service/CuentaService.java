@@ -1,5 +1,6 @@
 package com.barud.service;
 
+import com.barud.dto.request.CuentaRequestDto;
 import com.barud.model.Cuenta;
 import com.barud.model.enums.CuentaEstado;
 import com.barud.model.enums.PedidoEstado;
@@ -39,26 +40,26 @@ public class CuentaService {
         return cuentaRepository.findById(id);
     }
 
-    public Cuenta crear(Cuenta cuenta) {
-        Optional<Cuenta> existente = cuentaRepository.findByIdPedido(cuenta.getIdPedido());
+    public Cuenta crear(CuentaRequestDto dto) {
+        Optional<Cuenta> existente = cuentaRepository.findByIdPedido(dto.idPedido());
         if (existente.isPresent()) {
-            throw new IllegalStateException("Ya existe una cuenta para el pedido " + cuenta.getIdPedido());
+            throw new IllegalStateException("Ya existe una cuenta para el pedido " + dto.idPedido());
         }
-        cuenta.setIdCuenta(null);
+        Cuenta cuenta = new Cuenta(null, dto.idPedido(), dto.subtotal(), dto.impuestos(), dto.total(), dto.estado());
         return cuentaRepository.save(cuenta);
     }
 
-    public Optional<Cuenta> actualizar(Integer id, Cuenta cuenta) {
+    public Optional<Cuenta> actualizar(Integer id, CuentaRequestDto dto) {
         if (!cuentaRepository.existsById(id)) {
             return Optional.empty();
         }
 
-        Optional<Cuenta> existente = cuentaRepository.findByIdPedido(cuenta.getIdPedido());
+        Optional<Cuenta> existente = cuentaRepository.findByIdPedido(dto.idPedido());
         if (existente.isPresent() && !existente.get().getIdCuenta().equals(id)) {
-            throw new IllegalStateException("Ya existe una cuenta para el pedido " + cuenta.getIdPedido());
+            throw new IllegalStateException("Ya existe una cuenta para el pedido " + dto.idPedido());
         }
 
-        cuenta.setIdCuenta(id);
+        Cuenta cuenta = new Cuenta(id, dto.idPedido(), dto.subtotal(), dto.impuestos(), dto.total(), dto.estado());
         return Optional.of(cuentaRepository.save(cuenta));
     }
 

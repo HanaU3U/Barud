@@ -1,14 +1,13 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.EmpleadoRequestDto;
 import com.barud.dto.response.EmpleadoResponseDto;
-import com.barud.model.Empleado;
 import com.barud.model.enums.EmpleadoEstado;
 import com.barud.model.enums.EmpleadoRol;
-import com.barud.repository.EmpleadoRepository;
+import com.barud.service.EmpleadoService;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/empleados")
 public class EmpleadoCrudController {
 
-    private final EmpleadoRepository empleadoRepository;
+    private final EmpleadoService empleadoService;
 
-    public EmpleadoCrudController(EmpleadoRepository empleadoRepository) {
-        this.empleadoRepository = empleadoRepository;
+    public EmpleadoCrudController(EmpleadoService empleadoService) {
+        this.empleadoService = empleadoService;
     }
 
     @GetMapping
@@ -38,40 +37,37 @@ public class EmpleadoCrudController {
         @RequestParam(required = false) LocalDate fechaDesde,
         @RequestParam(required = false) LocalDate fechaHasta
     ) {
-        return empleadoRepository.findByFilters(nombre, rol, estado, fechaDesde, fechaHasta).stream()
+        return empleadoService.listarConFiltros(nombre, rol, estado, fechaDesde, fechaHasta).stream()
             .map(ResponseDtoMapper::toDto)
             .toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmpleadoResponseDto> obtenerPorId(@PathVariable Integer id) {
-        Optional<Empleado> empleado = empleadoRepository.findById(id);
-        return empleado.map(ResponseDtoMapper::toDto)
+        return empleadoService.obtenerPorId(id)
+            .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public EmpleadoResponseDto crear(@RequestBody Empleado empleado) {
-        empleado.setIdEmpleado(null);
-        return ResponseDtoMapper.toDto(empleadoRepository.save(empleado));
+    public EmpleadoResponseDto crear(@RequestBody EmpleadoRequestDto dto) {
+        return ResponseDtoMapper.toDto(empleadoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpleadoResponseDto> actualizar(@PathVariable Integer id, @RequestBody Empleado empleado) {
-        if (!empleadoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        empleado.setIdEmpleado(id);
-        return ResponseEntity.ok(ResponseDtoMapper.toDto(empleadoRepository.save(empleado)));
+    public ResponseEntity<EmpleadoResponseDto> actualizar(@PathVariable Integer id, @RequestBody EmpleadoRequestDto dto) {
+        return empleadoService.actualizar(id, dto)
+            .map(ResponseDtoMapper::toDto)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        if (!empleadoRepository.existsById(id)) {
+        if (!empleadoService.eliminar(id)) {
             return ResponseEntity.notFound().build();
         }
-        empleadoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

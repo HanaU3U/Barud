@@ -25,6 +25,9 @@ public enum ProductoTipo {
         return Arrays.stream(values())
             .filter(v -> v.dbValue.equalsIgnoreCase(value) || v.name().equalsIgnoreCase(value))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Tipo de producto invalido: " + value));
+            .orElseThrow(() -> new IllegalArgumentException(
+                "Tipo de producto invalido: '" + value + "'. Valores aceptados: " +
+                Arrays.stream(values()).map(v -> v.dbValue).toList()
+            ));
     }
 }

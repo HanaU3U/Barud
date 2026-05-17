@@ -1,5 +1,7 @@
 package com.barud.service;
 
+import com.barud.dto.response.BebidaAlcoholicaMasVendidaViewDto;
+import com.barud.dto.response.ComidaNoPedidaViewDto;
 import com.barud.dto.response.CuentaMesaViewDto;
 import com.barud.dto.response.DetalleCuentaMesaViewDto;
 import com.barud.dto.response.DetallePedidoCompletoViewDto;
@@ -170,6 +172,42 @@ public class VistaQueryService {
                 rs.getInt("numero_mesa"),
                 rs.getString("descripcion"),
                 rs.getBigDecimal("monto")
+            )
+        );
+    }
+
+    public List<BebidaAlcoholicaMasVendidaViewDto> bebidasAlcoholicasMasVendidas() {
+        return jdbcTemplate.query(
+            "SELECT p.nombre, SUM(dp.cantidad) AS total_vendido " +
+            "FROM producto p " +
+            "JOIN detalle_pedido dp ON dp.id_producto = p.id_producto " +
+            "WHERE p.tipo = 'Bebida alcoholica' " +
+            "GROUP BY p.id_producto, p.nombre " +
+            "HAVING SUM(dp.cantidad) > ( " +
+            "    SELECT AVG(dp2.cantidad) " +
+            "    FROM detalle_pedido dp2 " +
+            "    WHERE dp2.id_producto = p.id_producto " +
+            ") " +
+            "ORDER BY total_vendido ASC",
+            (rs, rowNum) -> new BebidaAlcoholicaMasVendidaViewDto(
+                rs.getString("nombre"),
+                toLong(rs.getObject("total_vendido"))
+            )
+        );
+    }
+
+    public List<ComidaNoPedidaViewDto> comidasNoPedidas() {
+        return jdbcTemplate.query(
+            "SELECT p.nombre, p.precio " +
+            "FROM producto p " +
+            "WHERE p.tipo = 'Comida' " +
+            "AND p.id_producto NOT IN ( " +
+            "    SELECT dp.id_producto FROM detalle_pedido dp " +
+            ") " +
+            "ORDER BY p.precio ASC",
+            (rs, rowNum) -> new ComidaNoPedidaViewDto(
+                rs.getString("nombre"),
+                rs.getBigDecimal("precio")
             )
         );
     }

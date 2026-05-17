@@ -1,5 +1,6 @@
 package com.barud.service;
 
+import com.barud.dto.request.PedidoRequestDto;
 import com.barud.model.Pedido;
 import com.barud.model.enums.MesaEstado;
 import com.barud.model.enums.PedidoEstado;
@@ -40,16 +41,16 @@ public class PedidoService {
         return pedidoRepository.findById(id);
     }
 
-    public Pedido crear(Pedido pedido) {
-        pedido.setIdPedido(null);
+    public Pedido crear(PedidoRequestDto dto) {
+        Pedido pedido = new Pedido(null, dto.idMesa(), dto.idMesero(), dto.fechaHora(), dto.numeroPersonas(), dto.estado());
         return pedidoRepository.save(pedido);
     }
 
-    public Optional<Pedido> actualizar(Integer id, Pedido pedido) {
+    public Optional<Pedido> actualizar(Integer id, PedidoRequestDto dto) {
         if (!pedidoRepository.existsById(id)) {
             return Optional.empty();
         }
-        pedido.setIdPedido(id);
+        Pedido pedido = new Pedido(id, dto.idMesa(), dto.idMesero(), dto.fechaHora(), dto.numeroPersonas(), dto.estado());
         return Optional.of(pedidoRepository.save(pedido));
     }
 

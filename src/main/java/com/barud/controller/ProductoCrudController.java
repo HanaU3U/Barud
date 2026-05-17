@@ -1,6 +1,7 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.ProductoRequestDto;
 import com.barud.dto.response.ProductoResponseDto;
 import com.barud.model.Producto;
 import com.barud.model.enums.ProductoTipo;
@@ -56,13 +57,13 @@ public class ProductoCrudController {
     }
 
     @PostMapping
-    public ProductoResponseDto crear(@RequestBody Producto producto) {
-        return ResponseDtoMapper.toDto(productoService.crear(producto));
+    public ProductoResponseDto crear(@RequestBody ProductoRequestDto dto) {
+        return ResponseDtoMapper.toDto(productoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoResponseDto> actualizar(@PathVariable Integer id, @RequestBody Producto producto) {
-        return productoService.actualizar(id, producto)
+    public ResponseEntity<ProductoResponseDto> actualizar(@PathVariable Integer id, @RequestBody ProductoRequestDto dto) {
+        return productoService.actualizar(id, dto)
             .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());

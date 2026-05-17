@@ -1,13 +1,12 @@
 package com.barud.controller;
 
 import com.barud.dto.ResponseDtoMapper;
+import com.barud.dto.request.PedidoRequestDto;
 import com.barud.dto.response.PedidoResponseDto;
-import com.barud.model.Pedido;
 import com.barud.model.enums.PedidoEstado;
 import com.barud.service.PedidoService;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,20 +45,20 @@ public class PedidoCrudController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PedidoResponseDto> obtenerPorId(@PathVariable Integer id) {
-        Optional<Pedido> pedido = pedidoService.obtenerPorId(id);
-        return pedido.map(ResponseDtoMapper::toDto)
+        return pedidoService.obtenerPorId(id)
+            .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public PedidoResponseDto crear(@RequestBody Pedido pedido) {
-        return ResponseDtoMapper.toDto(pedidoService.crear(pedido));
+    public PedidoResponseDto crear(@RequestBody PedidoRequestDto dto) {
+        return ResponseDtoMapper.toDto(pedidoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoResponseDto> actualizar(@PathVariable Integer id, @RequestBody Pedido pedido) {
-        return pedidoService.actualizar(id, pedido)
+    public ResponseEntity<PedidoResponseDto> actualizar(@PathVariable Integer id, @RequestBody PedidoRequestDto dto) {
+        return pedidoService.actualizar(id, dto)
             .map(ResponseDtoMapper::toDto)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
