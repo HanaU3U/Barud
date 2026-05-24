@@ -68,9 +68,8 @@
 
 ## Diagrama ER
 
-> _Añadir aquí una imagen o enlace al diagrama entidad-relación de la base de datos._
->
-> Ejemplo: `![Diagrama ER](docs/diagrama-er.png)`
+<img width="1515" height="859" alt="Diagrama ER" src="https://github.com/user-attachments/assets/919a285f-84df-4360-874f-b6c8c15ce0cc" />
+
 
 ---
 
