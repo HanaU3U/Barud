@@ -130,4 +130,12 @@ public class ProductoRepository {
 	public void deleteById(Integer id) {
 		jdbcTemplate.update("DELETE FROM producto WHERE id_producto = ?", id);
 	}
+
+	public void decrementarStock(Integer idProducto, Integer cantidad) {
+		jdbcTemplate.update(
+			"UPDATE producto SET stock = GREATEST(0, stock - ?) WHERE id_producto = ?",
+			cantidad,
+			idProducto
+		);
+	}
 }

@@ -41,9 +41,12 @@ public class PedidoService {
         return pedidoRepository.findById(id);
     }
 
+    @Transactional
     public Pedido crear(PedidoRequestDto dto) {
         Pedido pedido = new Pedido(null, dto.idMesa(), dto.idMesero(), dto.fechaHora(), dto.numeroPersonas(), dto.estado());
-        return pedidoRepository.save(pedido);
+        Pedido pedidoPersistido = pedidoRepository.save(pedido);
+        mesaRepository.updateEstadoById(dto.idMesa(), MesaEstado.OCUPADA);
+        return pedidoPersistido;
     }
 
     public Optional<Pedido> actualizar(Integer id, PedidoRequestDto dto) {

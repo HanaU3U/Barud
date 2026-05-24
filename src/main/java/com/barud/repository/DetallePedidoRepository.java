@@ -81,4 +81,20 @@ public class DetallePedidoRepository {
 	public void deleteById(Integer id) {
 		jdbcTemplate.update("DELETE FROM detalle_pedido WHERE id_detalle = ?", id);
 	}
+
+	public List<DetallePedido> findByIdPedido(Integer idPedido) {
+		return jdbcTemplate.query(
+			"SELECT id_detalle, id_pedido, id_producto, cantidad, precio_unitario, estado FROM detalle_pedido WHERE id_pedido = ?",
+			rowMapper,
+			idPedido
+		);
+	}
+
+	public void updateEstadoByIdPedido(Integer idPedido, DetallePedidoEstado estado) {
+		jdbcTemplate.update(
+			"UPDATE detalle_pedido SET estado = ? WHERE id_pedido = ?",
+			estado.getDbValue(),
+			idPedido
+		);
+	}
 }
