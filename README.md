@@ -1,6 +1,142 @@
 # Barud API
 
-REST API para la gestión de un restaurante. Permite administrar mesas, empleados, productos, pedidos, cuentas, pagos y divisiones de cuenta, además de exponer consultas analíticas a través de vistas de base de datos.
+## Descripción
+
+**Barud** es una REST API para la gestión integral de un restaurante. Permite administrar mesas, empleados, productos, pedidos, cuentas, pagos y divisiones de cuenta, además de exponer consultas analíticas a través de vistas de base de datos. Está destinada a ser consumida por aplicaciones de frontend o clientes HTTP (Postman, etc.) utilizados por el personal del restaurante.
+
+---
+
+## Integrantes
+
+| Nombre |
+|---|
+| Hana Sofía Pinilla Manrique |
+
+---
+
+## Requisitos previos
+
+- Java 17 o superior (el proyecto usa Java 21)
+- Maven 3.9+ (o usar el wrapper `mvnw` / `mvnw.cmd` incluido)
+- PostgreSQL corriendo localmente
+- IDE recomendado: VS Code o IntelliJ IDEA
+
+---
+
+## Instalación
+
+1. **Clonar el repositorio**
+
+   ```bash
+   git clone https://github.com/tu-usuario/barud.git
+   cd barud
+   ```
+
+2. **Cargar el esquema SQL**
+
+   Crear la base de datos `BARUD` en PostgreSQL y ejecutar el script de creación de tablas y vistas incluido en el proyecto.
+
+   ```sql
+   CREATE DATABASE "BARUD";
+   -- luego ejecutar el script SQL del proyecto
+   ```
+
+3. **Configurar `application.properties`**
+
+   Editar `src/main/resources/application.properties` con las credenciales de tu entorno:
+
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5433/BARUD
+   spring.datasource.username=postgres
+   spring.datasource.password=123456
+   spring.datasource.hikari.maximum-pool-size=5
+   ```
+
+4. **Ejecutar la aplicación**
+
+   ```bash
+   # Windows
+   mvnw.cmd spring-boot:run
+
+   # macOS / Linux
+   ./mvnw spring-boot:run
+   ```
+
+   La API queda disponible en: `http://localhost:8080`
+
+---
+
+## Diagrama ER
+
+> _Añadir aquí una imagen o enlace al diagrama entidad-relación de la base de datos._
+>
+> Ejemplo: `![Diagrama ER](docs/diagrama-er.png)`
+
+---
+
+## Endpoints
+
+A continuación se listan los endpoints disponibles. Para la documentación completa (body, parámetros y ejemplos) consultar [ENDPOINTS.md](ENDPOINTS.md).
+
+| Método | URL | Descripción |
+|--------|-----|-------------|
+| `GET` | `/api/productos` | Lista productos con filtros y paginación |
+| `GET` | `/api/productos/{id}` | Obtiene un producto por ID |
+| `POST` | `/api/productos` | Crea un nuevo producto |
+| `PUT` | `/api/productos/{id}` | Actualiza un producto |
+| `DELETE` | `/api/productos/{id}` | Elimina un producto |
+| `GET` | `/api/pedidos` | Lista pedidos con filtros y paginación |
+| `GET` | `/api/pedidos/{id}` | Obtiene un pedido por ID |
+| `POST` | `/api/pedidos` | Crea un nuevo pedido |
+| `PUT` | `/api/pedidos/{id}` | Actualiza un pedido |
+| `PUT` | `/api/pedidos/{id}/cerrar` | Cierra un pedido y libera la mesa |
+| `DELETE` | `/api/pedidos/{id}` | Elimina un pedido |
+| `GET` | `/api/detalles-pedido` | Lista todos los detalles de pedido |
+| `GET` | `/api/detalles-pedido/{id}` | Obtiene un detalle por ID |
+| `POST` | `/api/detalles-pedido` | Crea un detalle de pedido |
+| `PUT` | `/api/detalles-pedido/{id}` | Actualiza un detalle de pedido |
+| `DELETE` | `/api/detalles-pedido/{id}` | Elimina un detalle de pedido |
+| `GET` | `/api/cuentas` | Lista cuentas con filtros y paginación |
+| `GET` | `/api/cuentas/{id}` | Obtiene una cuenta por ID |
+| `POST` | `/api/cuentas` | Crea una cuenta para un pedido |
+| `PUT` | `/api/cuentas/{id}` | Actualiza una cuenta |
+| `PUT` | `/api/cuentas/{id}/cerrar` | Cierra la cuenta y el pedido asociado |
+| `DELETE` | `/api/cuentas/{id}` | Elimina una cuenta |
+| `GET` | `/api/divisiones-cuenta` | Lista todas las divisiones de cuenta |
+| `GET` | `/api/divisiones-cuenta/{id}` | Obtiene una división por ID |
+| `POST` | `/api/divisiones-cuenta` | Crea una división de cuenta |
+| `PUT` | `/api/divisiones-cuenta/{id}` | Actualiza una división de cuenta |
+| `DELETE` | `/api/divisiones-cuenta/{id}` | Elimina una división de cuenta |
+| `GET` | `/api/pagos` | Lista todos los pagos |
+| `GET` | `/api/pagos/{id}` | Obtiene un pago por ID |
+| `POST` | `/api/pagos` | Registra un nuevo pago |
+| `PUT` | `/api/pagos/{id}` | Actualiza un pago |
+| `DELETE` | `/api/pagos/{id}` | Elimina un pago |
+| `GET` | `/api/empleados` | Lista empleados con filtros |
+| `GET` | `/api/empleados/{id}` | Obtiene un empleado por ID |
+| `POST` | `/api/empleados` | Crea un nuevo empleado |
+| `PUT` | `/api/empleados/{id}` | Actualiza un empleado |
+| `DELETE` | `/api/empleados/{id}` | Elimina un empleado |
+| `GET` | `/api/mesas` | Lista todas las mesas |
+| `GET` | `/api/mesas/{id}` | Obtiene una mesa por ID |
+| `POST` | `/api/mesas` | Crea una nueva mesa |
+| `PUT` | `/api/mesas/{id}` | Actualiza una mesa |
+| `DELETE` | `/api/mesas/{id}` | Elimina una mesa |
+| `GET` | `/api/vistas/detalle-cuenta-mesa` | Detalle completo de cuentas con mesa y productos |
+| `GET` | `/api/vistas/ingresos-dia-semana` | Ingresos agrupados por día de la semana |
+| `GET` | `/api/vistas/productos-mas-vendidos` | Productos ordenados por cantidad vendida |
+| `GET` | `/api/vistas/pedidos-por-dia` | Pedidos e ingresos agrupados por fecha |
+
+---
+
+## Requerimientos funcionales
+
+1. **Gestión de mesas** — Crear, consultar, actualizar y eliminar mesas; controlar su estado (`Disponible`, `Ocupada`, `Reservada`). Al cerrar un pedido la mesa vuelve a `Disponible` automáticamente.
+2. **Gestión de pedidos y detalles** — Registrar pedidos vinculados a una mesa y un mesero; añadir, modificar y cancelar ítems (detalles) con precio unitario y cantidad.
+3. **Facturación y pagos** — Generar cuentas con subtotal, impuestos y total; soportar cierre de cuenta con cambio de estado del pedido; registrar pagos con método y monto.
+4. **División de cuenta** — Dividir una cuenta en partes con descripción y monto individual para grupos de comensales.
+5. **Gestión de empleados y productos** — CRUD completo con filtros por rol/estado para empleados y por nombre/tipo/precio/stock para productos.
+6. **Consultas analíticas** — Vistas de base de datos que exponen ingresos por día de la semana, productos más vendidos, pedidos por fecha y detalle completo de cuenta por mesa.
 
 ---
 
@@ -15,45 +151,6 @@ REST API para la gestión de un restaurante. Permite administrar mesas, empleado
 | PostgreSQL | — |
 | Lombok | — |
 | HikariCP | (incluido en Boot) |
-
----
-
-## Requisitos previos
-
-- Java 21+
-- Maven 3.9+ (o usar el wrapper `mvnw` incluido)
-- PostgreSQL corriendo en `localhost:5433`
-- Base de datos creada con nombre `BARUD`
-
----
-
-## Configuración
-
-El archivo de configuración se encuentra en `src/main/resources/application.properties`.
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5433/BARUD
-spring.datasource.username=postgres
-spring.datasource.password=123456
-spring.datasource.hikari.maximum-pool-size=5
-```
-
-Ajustar las credenciales y el puerto según el entorno local.
-
----
-
-## Ejecución
-
-```bash
-# Con el wrapper de Maven incluido
-./mvnw spring-boot:run
-
-# O compilar y ejecutar el JAR
-./mvnw clean package
-java -jar target/barud-0.0.1-SNAPSHOT.jar
-```
-
-La API queda disponible en: `http://localhost:8080`
 
 ---
 
